@@ -8,12 +8,14 @@ import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -45,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         txtSpeechInput = (TextView) findViewById(R.id.txtSpeechInput);
         micro = (ImageButton) findViewById(R.id.btnSpeak);
+        wordList=(ListView) findViewById(R.id.word_list);
+
 
         //проверяем, поддерживается ли распознование речи
         PackageManager packManager= getPackageManager();
@@ -91,6 +95,21 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(listenIntent, VR_REQUEST);
     }
 
-    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        //проверяем результат распознавания речи
+        if(requestCode== VR_REQUEST && resultCode== RESULT_OK)
+        {
+        //Добавляем распознанные слова в список результатов
+            ArrayList<String> suggestedWords = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+        //Передаем список возможных слов через ArrayAdapter компоненту ListView
+            wordList.setAdapter(new ArrayAdapter<String>(this, R.layout.word, suggestedWords));
+        }
+
+        //tss код здесь
+
+        //вызываем метод родительского класса
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
 }
