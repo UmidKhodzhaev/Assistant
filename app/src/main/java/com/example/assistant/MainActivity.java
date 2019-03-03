@@ -48,8 +48,7 @@ public class MainActivity extends AppCompatActivity {
         txtSpeechInput = (TextView) findViewById(R.id.txtSpeechInput);
         micro = (ImageButton) findViewById(R.id.btnSpeak);
         wordList=(ListView) findViewById(R.id.word_list);
-
-
+        
         //проверяем, поддерживается ли распознование речи
         PackageManager packManager= getPackageManager();
         List<ResolveInfo> intActivities= packManager.queryIntentActivities(new
