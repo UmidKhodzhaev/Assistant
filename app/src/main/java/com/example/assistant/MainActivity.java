@@ -1,24 +1,96 @@
 package com.example.assistant;
 
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.speech.RecognizerIntent;
+import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.List;
+
 
 public class MainActivity extends AppCompatActivity {
 
     ImageView micro;
+    TextView txtSpeechInput;
+    //переменная для проверки возможности
+    //распознавания голоса в телефоне
+    private static final int VR_REQUEST = 999;
+
+    //ListView для отображения запросов
+    private ListView wordList;
+
+    //Log для вывода вспомогательной информации
+    private final String LOG_TAG=  "SpeechActivity";
+
+    //переменные для работы TTS
+
+    //переменная для проверки данных для TTS
+    private int MY_DATA_CHECK_CODE=0;
+
+    //Text To Speech интерфейс
+    private TextToSpeech repeatTTS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        micro = findViewById(R.id.imageView2);
-        micro.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        txtSpeechInput = (TextView) findViewById(R.id.txtSpeechInput);
+        micro = (ImageButton) findViewById(R.id.btnSpeak);
 
-            }
-        });
+        //проверяем, поддерживается ли распознование речи
+        PackageManager packManager= getPackageManager();
+        List<ResolveInfo> intActivities= packManager.queryIntentActivities(new
+                Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH),0);
+        if(intActivities.size()!=0){
+            // распознавание поддерживается, будем отслеживать событие щелчка по кнопке
+            micro.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                        // отслеживаем результат
+                        listenToSpeech();
+
+                }
+            });
+        }else
+        {
+        // распознавание не работает. Заблокируем
+        // кнопку и выведем соответствующее
+        // предупреждение.
+            micro.setEnabled(false);
+            Toast.makeText(this,"Oops - Speech recognition not supported!", Toast.LENGTH_LONG).show();
+        }
+
+
     }
+
+    private void listenToSpeech(){
+
+        //запускаем интент, распознающий речь и передаем ему требуемые данные
+        Intent listenIntent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        //указываем пакет
+        listenIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
+                getClass().getPackage().getName());
+        //В процессе распознования выводим сообщение
+        listenIntent.putExtra(RecognizerIntent.EXTRA_PROMPT,"Say a word!");
+        //устанавливаем модель речи
+        listenIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        //указываем число результатов, которые могут быть получены
+        listenIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS,10);
+
+        //начинаем прослушивание
+        startActivityForResult(listenIntent, VR_REQUEST);
+    }
+
+    
+
 }
