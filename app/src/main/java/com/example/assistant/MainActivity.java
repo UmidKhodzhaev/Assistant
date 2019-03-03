@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         txtSpeechInput = (TextView) findViewById(R.id.txtSpeechInput);
         micro = (ImageButton) findViewById(R.id.btnSpeak);
         wordList=(ListView) findViewById(R.id.word_list);
-        
+
         //проверяем, поддерживается ли распознование речи
         PackageManager packManager= getPackageManager();
         List<ResolveInfo> intActivities= packManager.queryIntentActivities(new
@@ -65,9 +65,7 @@ public class MainActivity extends AppCompatActivity {
             });
         }else
         {
-        // распознавание не работает. Заблокируем
-        // кнопку и выведем соответствующее
-        // предупреждение.
+        // распознавание не работает. Заблокируем кнопку и выведем соответствующее предупреждение.
             micro.setEnabled(false);
             Toast.makeText(this,"Oops - Speech recognition not supported!", Toast.LENGTH_LONG).show();
         }
@@ -80,15 +78,13 @@ public class MainActivity extends AppCompatActivity {
         //запускаем интент, распознающий речь и передаем ему требуемые данные
         Intent listenIntent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         //указываем пакет
-        listenIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
-                getClass().getPackage().getName());
+        listenIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getClass().getPackage().getName());
         //В процессе распознования выводим сообщение
         listenIntent.putExtra(RecognizerIntent.EXTRA_PROMPT,"Say a word!");
         //устанавливаем модель речи
-        listenIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        listenIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         //указываем число результатов, которые могут быть получены
-        listenIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS,10);
+        listenIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS,1);
 
         //начинаем прослушивание
         startActivityForResult(listenIntent, VR_REQUEST);
