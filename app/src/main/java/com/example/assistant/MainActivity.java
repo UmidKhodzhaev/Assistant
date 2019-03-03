@@ -23,6 +23,9 @@ public class MainActivity extends AppCompatActivity {
 
     ImageView micro;
     TextView txtSpeechInput;
+
+    ArrayList<String> requests;
+
     //переменная для проверки возможности
     //распознавания голоса в телефоне
     private static final int VR_REQUEST = 999;
@@ -31,12 +34,12 @@ public class MainActivity extends AppCompatActivity {
     private ListView wordList;
 
     //Log для вывода вспомогательной информации
-    private final String LOG_TAG=  "SpeechActivity";
+    private final String LOG_TAG = "SpeechActivity";
 
     //переменные для работы TTS
 
     //переменная для проверки данных для TTS
-    private int MY_DATA_CHECK_CODE=0;
+    private int MY_DATA_CHECK_CODE = 0;
 
     //Text To Speech интерфейс
     private TextToSpeech repeatTTS;
@@ -47,58 +50,58 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         txtSpeechInput = (TextView) findViewById(R.id.txtSpeechInput);
         micro = (ImageButton) findViewById(R.id.btnSpeak);
-        wordList=(ListView) findViewById(R.id.word_list);
+        wordList = (ListView) findViewById(R.id.word_list);
+
+        requests = new ArrayList<>();
 
         //проверяем, поддерживается ли распознование речи
-        PackageManager packManager= getPackageManager();
-        List<ResolveInfo> intActivities= packManager.queryIntentActivities(new
-                Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH),0);
-        if(intActivities.size()!=0){
+        PackageManager packManager = getPackageManager();
+        List<ResolveInfo> intActivities = packManager.queryIntentActivities(new
+                Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
+        if (intActivities.size() != 0) {
             // распознавание поддерживается, будем отслеживать событие щелчка по кнопке
             micro.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                        // отслеживаем результат
-                        listenToSpeech();
-
+                    // отслеживаем результат
+                    listenToSpeech();
                 }
             });
-        }else
-        {
-        // распознавание не работает. Заблокируем кнопку и выведем соответствующее предупреждение.
+        } else {
+            // распознавание не работает. Заблокируем кнопку и выведем соответствующее предупреждение.
             micro.setEnabled(false);
-            Toast.makeText(this,"Oops - Speech recognition not supported!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Oops - Speech recognition not supported!", Toast.LENGTH_LONG).show();
         }
 
 
     }
 
-    private void listenToSpeech(){
+    private void listenToSpeech() {
 
         //запускаем интент, распознающий речь и передаем ему требуемые данные
-        Intent listenIntent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        Intent listenIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         //указываем пакет
         listenIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getClass().getPackage().getName());
         //В процессе распознования выводим сообщение
-        listenIntent.putExtra(RecognizerIntent.EXTRA_PROMPT,"Say a word!");
+        listenIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Say a word!");
         //устанавливаем модель речи
         listenIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         //указываем число результатов, которые могут быть получены
-        listenIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS,1);
+        listenIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
 
         //начинаем прослушивание
         startActivityForResult(listenIntent, VR_REQUEST);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //проверяем результат распознавания речи
-        if(requestCode== VR_REQUEST && resultCode== RESULT_OK)
-        {
-        //Добавляем распознанные слова в список результатов
-            ArrayList<String> suggestedWords = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-        //Передаем список возможных слов через ArrayAdapter компоненту ListView
-            wordList.setAdapter(new ArrayAdapter<String>(this, R.layout.word, suggestedWords));
+        if (requestCode == VR_REQUEST && resultCode == RESULT_OK) {
+            //Добавляем распознанные слова в список результатов
+            requests.addAll(data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS));
+//            requests = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            //Передаем список возможных слов через ArrayAdapter компоненту ListView
+            //wordList.setAdapter(new ArrayAdapter<String>(this, R.layout.word, suggestedWords));
         }
 
         //tss код здесь
@@ -107,4 +110,9 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        wordList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.word, requests));
+    }
 }
