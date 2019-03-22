@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
         int indexFindEn = row.indexOf(find);
         if(indexFindEn <= 3){
             String searchRequest = String.copyValueOf(row.toCharArray()) ;
-            Uri address = Uri.parse(searchRequest);
+            Uri address = Uri.parse("https://www.google.com/search?q= " + searchRequest);
             Intent openLinkIntent = new Intent(Intent.ACTION_VIEW, address);
             if (openLinkIntent.resolveActivity(getPackageManager()) != null) {
                 startActivity(openLinkIntent);
