@@ -3,10 +3,12 @@ package com.example.assistant;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
@@ -23,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
     ImageView micro;
     TextView txtSpeechInput;
+    Integer sizeOfSearch;
 
     ArrayList<String> requests;
 
@@ -99,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == VR_REQUEST && resultCode == RESULT_OK) {
             //Добавляем распознанные слова в список результатов
             requests.addAll(data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS));
+            checkResult(requests.get(requests.size()-1).toLowerCase());
 //            requests = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             //Передаем список возможных слов через ArrayAdapter компоненту ListView
             //wordList.setAdapter(new ArrayAdapter<String>(this, R.layout.word, suggestedWords));
@@ -114,5 +118,30 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         wordList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.word, requests));
+    }
+
+    void checkResult(String row){
+        boolean findRu = row.contains("найти"), findEn = row.contains("find");
+        if (findRu){
+            forResearch(row, "найти");
+        }
+        if (findEn){
+            forResearch(row, "find");
+        }
+
+    }
+
+    void forResearch(String row, String find){
+        int indexFindEn = row.indexOf(find);
+        if(indexFindEn <= 3){
+            String searchRequest = String.copyValueOf(row.toCharArray()) ;
+            Uri address = Uri.parse(searchRequest);
+            Intent openLinkIntent = new Intent(Intent.ACTION_VIEW, address);
+            if (openLinkIntent.resolveActivity(getPackageManager()) != null) {
+                startActivity(openLinkIntent);
+            } else {
+                Log.d("Intent", "Не получается обработать намерение!");
+            }
+        }
     }
 }
