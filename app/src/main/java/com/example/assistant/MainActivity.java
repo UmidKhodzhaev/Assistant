@@ -181,22 +181,22 @@ public class MainActivity extends AppCompatActivity {
 
         tempRow.replace("x", "*");
         Log.d("AADADAD", tempRow);
-//        try {
+        try {
             tempRow = actionWithRow(tempRow);
             Log.d("AADADAD", tempRow);
         answer = eval(tempRow);
 
             Toast.makeText(getApplicationContext(),Double.toString(answer), Toast.LENGTH_LONG).show();
 
-//        }catch (Exception e){
-//            Toast.makeText(getApplicationContext(),"Не могу посчитать...", Toast.LENGTH_LONG).show();
-//            Log.d("Error", e.toString());
-//        }
+        }catch (Exception e){
+            Toast.makeText(getApplicationContext(),"Не могу посчитать...", Toast.LENGTH_LONG).show();
+            Log.d("Error", e.toString());
+        }
     }
 
     String actionWithRow(String row){
         String result = "";
-        String legalSymbols = "0l23456789*+-/1";
+        String legalSymbols = "023456789*+-/^1";
         Log.d("AADADAD4", Integer.toString(row.length()));
         for (int i = 0; i < row.length() ; i++) {
                 if(legalSymbols.contains(Character.toString(row.toCharArray()[i]))){
