@@ -179,12 +179,12 @@ public class MainActivity extends AppCompatActivity {
             tempRow += Character.toString(tempCh[i]);
         }
 
-        tempRow.replace("x", "*");
+        tempRow = tempRow.replace("x ", "*");
         Log.d("AADADAD", tempRow);
         try {
             tempRow = actionWithRow(tempRow);
-            Log.d("AADADAD", tempRow);
-        answer = eval(tempRow);
+            Log.d("AADADAD5", tempRow);
+            answer = eval(tempRow);
 
             Toast.makeText(getApplicationContext(),Double.toString(answer), Toast.LENGTH_LONG).show();
 
