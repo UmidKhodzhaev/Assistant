@@ -135,7 +135,6 @@ public class MainActivity extends AppCompatActivity {
             forResearch(row, "find ");
         }
         if (calcRu){
-//            row = row.replace(',', '.');
             calc(row, "решить ");
         }
         if (calcEn){
@@ -180,28 +179,27 @@ public class MainActivity extends AppCompatActivity {
         }
 
         tempRow = tempRow.replace("x ", "*");
-        Log.d("AADADAD", tempRow);
         try {
             tempRow = actionWithRow(tempRow);
-            Log.d("AADADAD5", tempRow);
             answer = eval(tempRow);
 
             Toast.makeText(getApplicationContext(),Double.toString(answer), Toast.LENGTH_LONG).show();
 
         }catch (Exception e){
             Toast.makeText(getApplicationContext(),"Не могу посчитать...", Toast.LENGTH_LONG).show();
-            Log.d("Error", e.toString());
         }
     }
 
     String actionWithRow(String row){
         String result = "";
         String legalSymbols = "023456789*+-/^1";
-        Log.d("AADADAD4", Integer.toString(row.length()));
+        String noLegalSymbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZабвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
         for (int i = 0; i < row.length() ; i++) {
                 if(legalSymbols.contains(Character.toString(row.toCharArray()[i]))){
                     result += Character.toString(row.toCharArray()[i]);
-                    Log.d("AADADAD3",Character.toString(row.toCharArray()[i]));
+                }
+                if(noLegalSymbols.contains(Character.toString(row.toCharArray()[i]))){
+                    throw new NullPointerException("Не могу посчитать...");
                 }
         }
         return result;
@@ -285,7 +283,6 @@ public class MainActivity extends AppCompatActivity {
                     else throw new RuntimeException("Unknown function: " + func);
                 }
                 else {
-//                    Log.d("AADADAD", Integer.toString(ch));
                     throw new RuntimeException("Unexpected: " + (char)ch);
                 }
 
